@@ -59,15 +59,22 @@ public class codeEditorGui extends JFrame {
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		JMenuItem openFile = new JMenuItem("Open File");
+		JMenuItem openFile = new JMenuItem("Open Project");
 		openFileAction ofAction = new openFileAction();
 		openFile.addActionListener(ofAction);
 		
 		JMenuItem mntmCreateProject = new JMenuItem("Create Project");
 		mntmCreateProject.addActionListener(new createProjectAction());
+		
+		JMenuItem saveFileAs = new JMenuItem("Save Project");
+		saveFileAs.addActionListener(new saveFileAction());
+		
 		mnFile.add(mntmCreateProject);
 		mnFile.add(openFile);
+		mnFile.add(saveFileAs);
 		
+		
+	
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());
 		setContentPane(contentPane);
@@ -130,7 +137,14 @@ public class codeEditorGui extends JFrame {
 				System.out.println("File not Found.");
 			}
 		}
-	}
+	} 
+	
+	
+	
+	
+	
+	
+	
 	
 	private class createProjectAction implements ActionListener {
 		
@@ -154,4 +168,7 @@ public class codeEditorGui extends JFrame {
 					
 		}
 	}
+	
+	
+	
 }
