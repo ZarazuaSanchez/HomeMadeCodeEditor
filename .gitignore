@@ -1,0 +1,4 @@
+#dont track ide folders or out folder
+out/
+.idea/
+.vscode/

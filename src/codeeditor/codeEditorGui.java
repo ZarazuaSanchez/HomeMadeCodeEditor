@@ -1,26 +1,10 @@
 package codeeditor;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.FileDialog;
-
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JMenuBar;
-import java.awt.Color;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JMenu;
-import javax.swing.JTextArea;
-import java.awt.SystemColor;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,7 +22,7 @@ public class codeEditorGui extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					codeEditorGui frame = new codeEditorGui();
+					codeeditor.codeEditorGui frame = new codeeditor.codeEditorGui();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -47,43 +31,53 @@ public class codeEditorGui extends JFrame {
 		});
 	}
 
-	
+
 	public codeEditorGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 859, 542);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBackground(SystemColor.activeCaptionBorder);
 		setJMenuBar(menuBar);
-		
+
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		
-		JMenuItem openFile = new JMenuItem("Open File");
-		openFileAction ofAction = new openFileAction();
+
+		JMenuItem openFile = new JMenuItem("Open Project");
+		codeeditor.codeEditorGui.openFileAction ofAction = new codeeditor.codeEditorGui.openFileAction();
 		openFile.addActionListener(ofAction);
-		
+
 		JMenuItem mntmCreateProject = new JMenuItem("Create Project");
-		mntmCreateProject.addActionListener(new createProjectAction());
+		mntmCreateProject.addActionListener(new codeeditor.codeEditorGui.createProjectAction());
+
+		JMenuItem saveFileAs = new JMenuItem("Save Project");
+		saveFileAs.addActionListener(new codeeditor.codeEditorGui.saveFileAction());
+
+		JMenuItem closeFile = new JMenuItem("Close Project");
+		closeFile.addActionListener(new codeeditor.codeEditorGui.CloseProjectAction());
+
 		mnFile.add(mntmCreateProject);
 		mnFile.add(openFile);
-		
+		mnFile.add(saveFileAs);
+		mnFile.add(closeFile);
+
+
 		contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());
 		setContentPane(contentPane);
-//		contentPane.setLayout(null);
-		
+// contentPane.setLayout(null);
+
 		textArea = new JTextArea();
 		JScrollPane scroll = new JScrollPane(textArea);
 		contentPane.add(scroll, BorderLayout.CENTER);
-		
-		
+
+
 	}
-	
+
 	private class openFileAction implements ActionListener {
-		
+
 		public void actionPerformed(ActionEvent e) {
-			FileDialog fileDialog = new FileDialog(codeEditorGui.this, "Choose a File", FileDialog.LOAD);
+			FileDialog fileDialog = new FileDialog(codeeditor.codeEditorGui.this, "Choose a File", FileDialog.LOAD);
 			fileDialog.setVisible(true);
 
 			if(fileDialog.getFile() != null) {
@@ -109,18 +103,18 @@ public class codeEditorGui extends JFrame {
 			}
 		}
 	}
-	
+
 	private class saveFileAction implements ActionListener {
-		
+
 		public void actionPerformed (ActionEvent e) {
-			FileDialog fileDialog = new FileDialog(codeEditorGui.this, "Save File", FileDialog.SAVE);
+			FileDialog fileDialog = new FileDialog(codeeditor.codeEditorGui.this, "Save File", FileDialog.SAVE);
 			fileDialog.setVisible(true);
-			
+
 			if(fileDialog.getFile() != null) {
 				filename = fileDialog.getDirectory() + fileDialog.getFile();
 				setTitle(filename);
 			}
-			
+
 			try {
 				FileWriter fw = new FileWriter(filename);
 				fw.write(textArea.getText());
@@ -131,14 +125,31 @@ public class codeEditorGui extends JFrame {
 			}
 		}
 	}
-	
+
+
+
+
+	private class CloseProjectAction implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setTitle("Home-Made Code Editor");
+			textArea.setText(null);
+			//System.exit(0);
+		}
+	}
+
+
+
+
+
+
 	private class createProjectAction implements ActionListener {
-		
+
 		public void actionPerformed(ActionEvent arg0) {
 			String projName = JOptionPane.showInputDialog("Enter project name:");
-			
+
 			Path dir = Paths.get(System.getProperty("user.home"), projName);
-			
+
 			if(!Files.exists(dir)) {
 				try {
 					Files.createDirectories(dir);
@@ -146,12 +157,15 @@ public class codeEditorGui extends JFrame {
 					setTitle(filename);
 					textArea.setText("");
 				} catch(IOException e) {
-					JOptionPane.showMessageDialog(codeEditorGui.this, "Project folder could not be made!");
+					JOptionPane.showMessageDialog(codeeditor.codeEditorGui.this, "Project folder could not be made!");
 				}
 			} else {
-				JOptionPane.showMessageDialog(codeEditorGui.this, "Project Folder exists already!");
+				JOptionPane.showMessageDialog(codeeditor.codeEditorGui.this, "Project Folder exists already!");
 			}
-					
+
 		}
 	}
+
+
+
 }
