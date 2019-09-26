@@ -42,7 +42,7 @@ public class codeEditorGui extends JFrame {
 
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-
+		
 		JMenuItem openFile = new JMenuItem("Open Project");
 		codeeditor.codeEditorGui.openFileAction ofAction = new codeeditor.codeEditorGui.openFileAction();
 		openFile.addActionListener(ofAction);
@@ -55,11 +55,19 @@ public class codeEditorGui extends JFrame {
 
 		JMenuItem closeFile = new JMenuItem("Close Project");
 		closeFile.addActionListener(new codeeditor.codeEditorGui.CloseProjectAction());
+		
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenuItem removeFile = new JMenuItem("Remove File");
+		//removeFile.addActionListener(new codeeditor.codeEditorGui.CloseProjectAction());
 
 		mnFile.add(mntmCreateProject);
 		mnFile.add(openFile);
 		mnFile.add(saveFileAs);
 		mnFile.add(closeFile);
+		
+		mnEdit.add(removeFile);
 
 
 		contentPane = new JPanel();
