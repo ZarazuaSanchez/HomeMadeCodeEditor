@@ -19,6 +19,14 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 	private JFrame f;
 	//JTabbedPane tabs;
 	JTextPane p;
+	private JSplitPane splitPane;  // split the window in top and bottom
+	
+	//the tab pane
+	JTabbedPane TabbedPane;
+	JPanel jPanelFirst;
+	JPanel jPanelSecond;
+	JPanel jPanelThird;
+    
 	private File currentFile = null;
 	private File projectDir = null;
 	//=================stuff to highlight keywords
@@ -33,6 +41,8 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 	public codeEditorGui() {
 		f = new JFrame("Code Editor");
 		p = new JTextPane(document);
+		splitPane = new JSplitPane();
+	  
 		//Font font = new Font(Font.SANS_SERIF, 3, 20);		//uncomment this and the line below to see the color better
 		//p.setFont(font);
 		//tabs = new JTabbedPane(JTabbedPane.TOP);
@@ -50,6 +60,12 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 		JMenuItem mi7 = new JMenuItem("Save File");
 		JMenuItem mi8 = new JMenuItem("Close File");
 		JMenuItem mi9 = new JMenuItem("Print");
+		
+		//creating the tabs
+		TabbedPane = new JTabbedPane();
+		jPanelFirst = new JPanel();
+		 jPanelSecond = new JPanel();
+		jPanelThird = new JPanel();
 
 		//Add action listener
 		mi1.addActionListener(this);
@@ -74,12 +90,26 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 
 		mb.add(m1);
 		f.setJMenuBar(mb);
-		f.add(p);
-		f.setSize(500, 300);
+		f.add(splitPane);
+		f.setSize(800, 500);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// let's configure our splitPane:
+        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);  // we want it to split the window verticaly
+        splitPane.setDividerLocation(300);                    // the initial position of the divider is 200 (our window is 400 pixels high)
+        splitPane.setTopComponent(p);                  // at the top we want our "topPanel"
+        splitPane.setBottomComponent(TabbedPane);     // and at the bottom we want our "bottomPanel"
 
+        //adding the different tabs to the tabbedPane
+        jPanelFirst.setLayout(null);
+        TabbedPane.addTab("tab1", jPanelFirst);
 
+        jPanelSecond.setLayout(null);
+        TabbedPane.addTab("tab2", jPanelSecond);
+
+        jPanelThird.setLayout(null);
+        TabbedPane.addTab("tab3", jPanelThird);
 	}
 
 
