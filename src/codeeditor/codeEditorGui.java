@@ -8,9 +8,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +20,7 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 	
 	//the tab pane
 	JTabbedPane TabbedPane;
-	JPanel jPanelFirst;
+	JPanel jPanelFirst;	JTextPane consolePane;
 	JPanel jPanelSecond;
 	JPanel jPanelThird;
     
@@ -49,7 +46,9 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 
 		JMenuBar mb = new JMenuBar();
 
-		JMenu m1 = new JMenu("File");
+		// file tab items =======================================================
+
+		JMenu fileMenu = new JMenu("File");
 		//create menu items
 		JMenuItem mi1 = new JMenuItem("New Project");
 		JMenuItem mi2 = new JMenuItem("Open Project");
@@ -60,12 +59,6 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 		JMenuItem mi7 = new JMenuItem("Save File");
 		JMenuItem mi8 = new JMenuItem("Close File");
 		JMenuItem mi9 = new JMenuItem("Print");
-		
-		//creating the tabs
-		TabbedPane = new JTabbedPane();
-		jPanelFirst = new JPanel();
-		 jPanelSecond = new JPanel();
-		jPanelThird = new JPanel();
 
 		//Add action listener
 		mi1.addActionListener(this);
@@ -78,22 +71,47 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 		mi8.addActionListener(this);
 		mi9.addActionListener(this);
 
-		m1.add(mi1);
-		m1.add(mi2);
-		m1.add(mi3);
-		m1.add(mi4);
-		m1.add(mi5);
-		m1.add(mi6);
-		m1.add(mi7);
-		m1.add(mi8);
-		m1.add(mi9);
+		fileMenu.add(mi1);
+		fileMenu.add(mi2);
+		fileMenu.add(mi3);
+		fileMenu.add(mi4);
+		fileMenu.add(mi5);
+		fileMenu.add(mi6);
+		fileMenu.add(mi7);
+		fileMenu.add(mi8);
+		fileMenu.add(mi9);
 
-		mb.add(m1);
+		// run menu items =================================================
+
+		JMenu runMenu = new JMenu("Run");
+		
+		JMenuItem com_and_run_button = new JMenuItem("Compile and Run");
+		JMenuItem compile_button = new JMenuItem("Compile");
+		JMenuItem run_button = new JMenuItem("Run");
+		
+		com_and_run_button.addActionListener(this);
+		compile_button.addActionListener(this);
+		run_button.addActionListener(this);
+		
+		runMenu.add(com_and_run_button);
+		runMenu.add(compile_button);
+		runMenu.add(run_button);
+
+		// add everything to the frame ========================================
+
+		mb.add(fileMenu);
+		mb.add(runMenu);
 		f.setJMenuBar(mb);
 		f.add(splitPane);
 		f.setSize(800, 500);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//creating the tabs
+		TabbedPane = new JTabbedPane();
+		jPanelFirst = new JPanel();		consolePane = new JTextPane();
+		jPanelSecond = new JPanel();
+		jPanelThird = new JPanel();
 		
 		// let's configure our splitPane:
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);  // we want it to split the window verticaly
@@ -102,8 +120,9 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
         splitPane.setBottomComponent(TabbedPane);     // and at the bottom we want our "bottomPanel"
 
         //adding the different tabs to the tabbedPane
-        jPanelFirst.setLayout(null);
-        TabbedPane.addTab("tab1", jPanelFirst);
+        //jPanelFirst.setLayout(null);
+        //jPanelFirst.add(consolePane);
+        TabbedPane.addTab("Console", consolePane);
 
         jPanelSecond.setLayout(null);
         TabbedPane.addTab("tab2", jPanelSecond);
@@ -345,11 +364,47 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 				JOptionPane.showMessageDialog(f, "No File is currently opened.");
 			}
 		}
+		else if(s.equals("Compile and Run")){		// compiles and runs the current file
+			if (currentFile != null){
+				String filePath = currentFile.getParent();
+				String fileName = currentFile.getName();
+				String className = fileName.substring(0, fileName.length() - 5); // trims ".java" off the string, so we actually run the class
+				System.out.println("path: " + filePath + "  name: " + fileName);
+				compileFile(fileName, filePath);
+				runFile(className, filePath);
+			}
+			else{
+				JOptionPane.showMessageDialog(f, "No file is open, open a file to compile and run it :)");
+			}
+		}
+		else if(s.equals("Compile")){				// compiles the current file
+			if (currentFile != null){
+				String filePath = currentFile.getParent();
+				String fileName = currentFile.getName();
+				System.out.println("path: " + filePath + "  name: " + fileName);
+				compileFile(fileName, filePath);
+			}
+			else{
+				JOptionPane.showMessageDialog(f, "No file is open, open a file to compile and run it :)");
+			}
+		}
+		else if(s.equals("Run")){
+			if (currentFile != null){
+				String filePath = currentFile.getParent();
+				String fileName = currentFile.getName();
+				String className = fileName.substring(0, fileName.length() - 5);
+				System.out.println("path: " + filePath + "  name: " + fileName);
+				runFile(className, filePath);
+			}
+			else{
+				JOptionPane.showMessageDialog(f, "No file is open, open a file to compile and run it :)");
+			}
+		}
 	}
 
 	@Override
-	public void insertUpdate(DocumentEvent d) {
-		//System.out.println(d.getOffset());
+	public void insertUpdate(DocumentEvent d) {		//these functions handle when the file is updated in order to
+		//System.out.println(d.getOffset());		//change color of keywords.
 		//System.out.println("inserted text");
 
 		handleTextChanged();
@@ -366,8 +421,8 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 		//System.out.println("changedUpdate");
 	}
 
-	private Pattern keywordPattern() {
-		StringBuilder sb = new StringBuilder();
+	private Pattern keywordPattern() {				//these two functions create patterns to locate the keywords
+		StringBuilder sb = new StringBuilder();		//using a "matcher" class. i don't fully understand it either
 		String[] keyWords = new String[]{"if", "else", "for", "while"};
 		for (String word : keyWords) {
 			sb.append("\\b");   //start of word boundary
@@ -400,6 +455,7 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 		return p;
 	}
 
+	//this is the function that actually changes the colors.
 	private void updateKeywordStyles(StyledDocument doc, AttributeSet normal, AttributeSet keyword, AttributeSet arithmetic) throws BadLocationException {
 		//System.out.println("updating keyword styles");
 		doc.setCharacterAttributes(0, p.getText().length(), normal, true);
@@ -430,5 +486,45 @@ public class codeEditorGui extends JFrame implements ActionListener, DocumentLis
 			}
 		});
 		//System.out.println("done handling text change");
+	}
+
+	// writes lines to the console when compiling or running
+	private void printLines(String command, String name, InputStream ins)throws Exception {
+		String line;
+		BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+		StyledDocument doc = consolePane.getStyledDocument();
+		while((line = in.readLine()) != null){
+			try {
+				doc.insertString(doc.getLength(), "\n" + name + " " + line, null);
+			} catch(BadLocationException e){
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	// runs a process, writing stdout and stderr to the "console". will be used for compiling and running
+	private void runProcess(String command, String args, String path){
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.command(command, args);		// set the command the process will execute
+		builder.directory(new File(path));		// set the working directory for the process
+		Process p;
+		StyledDocument doc = consolePane.getStyledDocument();
+
+		try{
+			doc.insertString(doc.getLength(), "\n\n======== running: " + command + " " + args, null);
+			p = builder.start();	//start the process
+			printLines(command,args + " stdout: ", p.getInputStream());
+			printLines(command, args + " stderr: ", p.getErrorStream());
+			p.waitFor();
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	private void compileFile(String name, String path){
+		runProcess("javac", name, path);
+	}
+	private void runFile(String name, String path){
+		runProcess("java", name, path);
 	}
 }
